@@ -39,7 +39,7 @@ bool MinicapStream::init(int w, int h, std::function<std::string(const std::stri
 
     while (true) {
         auto res = process_handle_->read(5);
-        std::cout << res;
+        // std::cout << res << std::flush;
         if (res.find("Allocating") != std::string::npos) {
             break;
         }

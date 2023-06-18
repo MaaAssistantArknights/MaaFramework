@@ -96,7 +96,7 @@ set_target_properties(maabusybox PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
-target_compile_definitions(maabusybox PRIVATE MAA_STATIC_LINK MAA_DEBUG)
+target_compile_definitions(maabusybox PRIVATE MAA_STATIC_LINK MAA_DEBUG MAA_USE_BOOST_IO)
 if (WIN32)
     target_link_libraries(maabusybox ws2_32)
     target_compile_definitions(maabusybox PRIVATE _UNICODE UNICODE)
