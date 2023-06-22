@@ -21,7 +21,7 @@ if(UNIX)
 endif()
 
 target_link_libraries(MaaFramework MaaControlUnit MaaUtils)
-target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries) #asio::asio cpr::cpr
+target_link_libraries(MaaFramework ${OpenCV_LIBS} MaaDerpLearning ONNXRuntime::ONNXRuntime HeaderOnlyLibraries ThriftCustomController) #asio::asio cpr::cpr
 
 # clang 15之后有ranges
 # if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
