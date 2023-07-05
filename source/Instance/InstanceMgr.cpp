@@ -75,12 +75,12 @@ bool InstanceMgr::inited() const
     return resource_ && controller_ && resource_->loaded() && controller_->connected();
 }
 
-bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
-{
-    std::ignore = key;
-    std::ignore = value;
-    return false;
-}
+// bool InstanceMgr::set_option(MaaInstOption key, const std::string& value)
+// {
+//     std::ignore = key;
+//     std::ignore = value;
+//     return false;
+// }
 
 MaaTaskId InstanceMgr::post_task(std::string_view task, std::string_view param)
 {

@@ -59,7 +59,7 @@ public:
     virtual bool bind_controller(MaaControllerAPI* controller) = 0;
     virtual bool inited() const = 0;
 
-    virtual bool set_option(MaaInstOption key, const std::string& value) = 0;
+    // virtual bool set_option(MaaInstOption key, const std::string& value) = 0;
 
     virtual MaaTaskId post_task(std::string_view task, std::string_view param) = 0;
     virtual bool set_task_param(MaaTaskId task_id, std::string_view param) = 0;

@@ -34,15 +34,15 @@ int main([[maybe_unused]] int argc, char** argv)
 
 bool demo_waiting(const std::filesystem::path& cur_dir)
 {
-    auto maa_handle = MaaCreate(nullptr, nullptr);
+    MaaInit(nullptr, nullptr);
     auto resource_handle = MaaResourceCreate((cur_dir / "cache").string().c_str(), nullptr, nullptr);
     auto controller_handle =
         MaaAdbControllerCreate(adb.c_str(), adb_address.c_str(),
                                MaaAdbControllerType_Input_Preset_Minitouch | MaaAdbControllerType_Screencap_FastestWay,
                                adb_config.c_str(), nullptr, nullptr);
 
-    MaaBindResource(maa_handle, resource_handle);
-    MaaBindController(maa_handle, controller_handle);
+    MaaBindResource(resource_handle);
+    MaaBindController(controller_handle);
 
     auto resource_id = MaaResourcePostResource(resource_handle, (cur_dir / "resource").string().c_str());
     auto connection_id = MaaControllerPostConnection(controller_handle);
@@ -51,18 +51,18 @@ bool demo_waiting(const std::filesystem::path& cur_dir)
     MaaControllerWait(controller_handle, connection_id);
 
     auto destroy = [&]() {
-        MaaDestroy(&maa_handle);
+        MaaDeinit();
         MaaResourceDestroy(&resource_handle);
         MaaControllerDestroy(&controller_handle);
     };
 
-    if (!MaaInited(maa_handle)) {
+    if (!MaaInited()) {
         destroy();
         return false;
     }
 
-    auto task_id = MaaPostTask(maa_handle, "Test", MaaTaskParam_Empty);
-    MaaTaskWait(maa_handle, task_id);
+    auto task_id = MaaPostTask("Test", MaaTaskParam_Empty);
+    MaaTaskWait(task_id);
 
     destroy();
 
@@ -91,24 +91,24 @@ bool demo_polling(const std::filesystem::path& cur_dir)
         std::this_thread::yield();
     }
 
-    auto maa_handle = MaaCreate(nullptr, nullptr);
-    MaaBindResource(maa_handle, resource_handle);
-    MaaBindController(maa_handle, controller_handle);
+    MaaInit(nullptr, nullptr);
+    MaaBindResource(resource_handle);
+    MaaBindController(controller_handle);
 
     auto destroy = [&]() {
-        MaaDestroy(&maa_handle);
+        MaaDeinit();
         MaaResourceDestroy(&resource_handle);
         MaaControllerDestroy(&controller_handle);
     };
 
-    if (!MaaInited(maa_handle)) {
+    if (!MaaInited()) {
         destroy();
         return false;
     }
 
-    MaaPostTask(maa_handle, "Test", MaaTaskParam_Empty);
+    MaaPostTask("Test", MaaTaskParam_Empty);
 
-    while (!MaaTaskAllFinished(maa_handle)) {
+    while (!MaaTaskAllFinished()) {
         std::this_thread::yield();
     }
 

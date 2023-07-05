@@ -11,7 +11,8 @@ extern "C"
 
     /* Resource */
 
-    MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaResourceHandle MAA_API MaaResourceCreate(MaaString user_path, MaaResourceCallback callback,
+                                                MaaCallbackTransparentArg callback_arg);
     void MAA_API MaaResourceDestroy(MaaResourceHandle* res);
 
     MaaResId MAA_API MaaResourcePostResource(MaaResourceHandle res, MaaString path);
@@ -50,25 +51,24 @@ extern "C"
 
     /* Instance */
 
-    MaaInstanceHandle MAA_API MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
-    void MAA_API MaaDestroy(MaaInstanceHandle* inst);
-    MaaBool MAA_API MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value);
+    MaaBool MAA_API MaaInit(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg);
+    MaaBool MAA_API MaaDeinit();
 
-    MaaBool MAA_API MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res);
-    MaaBool MAA_API MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl);
-    MaaBool MAA_API MaaInited(MaaInstanceHandle inst);
+    MaaBool MAA_API MaaBindResource(MaaResourceHandle res);
+    MaaBool MAA_API MaaBindController(MaaControllerHandle ctrl);
+    MaaBool MAA_API MaaInited();
 
-    MaaTaskId MAA_API MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param);
-    MaaBool MAA_API MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param);
+    MaaTaskId MAA_API MaaPostTask(MaaString task, MaaJsonString param);
+    MaaBool MAA_API MaaSetTaskParam(MaaTaskId id, MaaJsonString param);
 
-    MaaStatus MAA_API MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id);
-    MaaStatus MAA_API MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id);
-    MaaBool MAA_API MaaTaskAllFinished(MaaInstanceHandle inst);
+    MaaStatus MAA_API MaaTaskStatus(MaaTaskId id);
+    MaaStatus MAA_API MaaTaskWait(MaaTaskId id);
+    MaaBool MAA_API MaaTaskAllFinished();
 
-    void MAA_API MaaStop(MaaInstanceHandle inst);
+    void MAA_API MaaStop();
 
-    MaaSize MAA_API MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
-    MaaSize MAA_API MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size);
+    MaaSize MAA_API MaaGetResourceHash(char* buff, MaaSize buff_size);
+    MaaSize MAA_API MaaGetControllerUUID(char* buff, MaaSize buff_size);
 
     /* Utils */
 

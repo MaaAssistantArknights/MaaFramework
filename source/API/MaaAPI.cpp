@@ -258,131 +258,132 @@ MaaSize MaaControllerGetUUID(MaaControllerHandle ctrl, char* buff, MaaSize buff_
     return size;
 }
 
-MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
+// TODO: 考虑重构而非模仿
+static MaaInstanceHandle handle = nullptr;
+
+MaaBool MaaInit(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_NS::InstanceMgr(callback, callback_arg);
-}
-
-void MaaDestroy(MaaInstanceHandle* inst)
-{
-    LogFunc << VAR_VOIDP(inst);
-
-    if (inst == nullptr || *inst == nullptr) {
-        return;
-    }
-    delete *inst;
-    *inst = nullptr;
-}
-
-MaaBool MaaSetOption(MaaInstanceHandle inst, MaaInstOption key, MaaString value)
-{
-    LogFunc << VAR_VOIDP(inst) << VAR(key) << VAR(value);
-
-    if (!inst) {
+    if (handle) {
         return false;
     }
-    return inst->set_option(key, value);
+
+    handle = new (std::nothrow) MAA_NS::InstanceMgr(callback, callback_arg);
+
+    return !!handle;
 }
 
-MaaBool MaaBindResource(MaaInstanceHandle inst, MaaResourceHandle res)
+MaaBool MaaDeinit()
 {
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(res);
+    LogFunc;
 
-    if (!inst || !res) {
+    if (!handle) {
         return false;
     }
-    return inst->bind_resource(res);
+
+    delete handle;
+    handle = nullptr;
+    return true;
 }
 
-MaaBool MaaBindController(MaaInstanceHandle inst, MaaControllerHandle ctrl)
+MaaBool MaaBindResource(MaaResourceHandle res)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(ctrl);
+    LogFunc << VAR_VOIDP(res);
 
-    if (!inst || !ctrl) {
+    if (!handle || !res) {
         return false;
     }
-    return inst->bind_controller(ctrl);
+    return handle->bind_resource(res);
 }
 
-MaaBool MaaInited(MaaInstanceHandle inst)
+MaaBool MaaBindController(MaaControllerHandle ctrl)
 {
-    LogFunc << VAR_VOIDP(inst);
-    if (!inst) {
+    LogFunc << VAR_VOIDP(ctrl);
+
+    if (!handle || !ctrl) {
         return false;
     }
-    return inst->inited();
+    return handle->bind_controller(ctrl);
 }
 
-MaaTaskId MaaPostTask(MaaInstanceHandle inst, MaaString task, MaaJsonString param)
+MaaBool MaaInited()
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(task) << VAR(param);
+    LogFunc;
+    if (!handle) {
+        return false;
+    }
+    return handle->inited();
+}
 
-    if (!inst) {
+MaaTaskId MaaPostTask(MaaString task, MaaJsonString param)
+{
+    LogFunc << VAR(task) << VAR(param);
+
+    if (!handle) {
         return MaaInvalidId;
     }
-    return inst->post_task(task, param);
+    return handle->post_task(task, param);
 }
 
-MaaBool MaaSetTaskParam(MaaInstanceHandle inst, MaaTaskId id, MaaJsonString param)
+MaaBool MaaSetTaskParam(MaaTaskId id, MaaJsonString param)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR(id) << VAR(param);
+    LogFunc << VAR(id) << VAR(param);
 
-    if (!inst) {
+    if (!handle) {
         return false;
     }
-    return inst->set_task_param(id, param);
+    return handle->set_task_param(id, param);
 }
 
-MaaStatus MaaTaskStatus(MaaInstanceHandle inst, MaaTaskId id)
+MaaStatus MaaTaskStatus(MaaTaskId id)
 {
-    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+    // LogFunc << VAR(id);
 
-    if (!inst) {
+    if (!handle) {
         return MaaStatus_Invalid;
     }
-    return inst->status(id);
+    return handle->status(id);
 }
 
-MaaStatus MaaTaskWait(MaaInstanceHandle inst, MaaTaskId id)
+MaaStatus MaaTaskWait(MaaTaskId id)
 {
-    // LogFunc << VAR_VOIDP(inst) << VAR(id);
+    // LogFunc << VAR(id);
 
-    if (!inst) {
+    if (!handle) {
         return MaaStatus_Invalid;
     }
-    return inst->wait(id);
+    return handle->wait(id);
 }
 
-MaaBool MaaTaskAllFinished(MaaInstanceHandle inst)
+MaaBool MaaTaskAllFinished()
 {
-    // LogFunc << VAR_VOIDP(inst) << VAR(id);
-    if (!inst) {
+    // LogFunc << VAR(id);
+    if (!handle) {
         return false;
     }
-    return inst->all_finished();
+    return handle->all_finished();
 }
 
-void MaaStop(MaaInstanceHandle inst)
+void MaaStop()
 {
-    LogFunc << VAR_VOIDP(inst);
+    LogFunc;
 
-    if (!inst) {
+    if (!handle) {
         return;
     }
 
-    inst->stop();
+    handle->stop();
 }
 
-MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
+MaaSize MaaGetResourceHash(char* buff, MaaSize buff_size)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
+    LogFunc << VAR_VOIDP(buff) << VAR(buff_size);
 
-    if (!inst || !buff) {
+    if (!handle || !buff) {
         return MaaNullSize;
     }
-    auto hash = inst->get_resource_hash();
+    auto hash = handle->get_resource_hash();
     size_t size = hash.size();
     if (size >= buff_size) {
         return MaaNullSize;
@@ -391,14 +392,14 @@ MaaSize MaaGetResourceHash(MaaInstanceHandle inst, char* buff, MaaSize buff_size
     return size;
 }
 
-MaaSize MaaGetControllerUUID(MaaInstanceHandle inst, char* buff, MaaSize buff_size)
+MaaSize MaaGetControllerUUID(char* buff, MaaSize buff_size)
 {
-    LogFunc << VAR_VOIDP(inst) << VAR_VOIDP(buff) << VAR(buff_size);
+    LogFunc << VAR_VOIDP(buff) << VAR(buff_size);
 
-    if (!inst || !buff) {
+    if (!handle || !buff) {
         return MaaNullSize;
     }
-    auto uuid = inst->get_controller_uuid();
+    auto uuid = handle->get_controller_uuid();
     size_t size = uuid.size();
     if (size >= buff_size) {
         return MaaNullSize;
