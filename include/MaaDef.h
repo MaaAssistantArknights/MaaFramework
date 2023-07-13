@@ -110,6 +110,16 @@ enum MaaAdbControllerTypeEnum
         MaaAdbControllerType_Touch_MaaTouch | MaaAdbControllerType_Key_MaaTouch,
 };
 
+typedef int32_t MaaThriftControllerType;
+enum MaaThriftControllerTypeEnum
+{
+    // param format should be "host:port"
+    MaaThriftControllerType_Socket = 1,
+
+    // param should be unix domain socket path
+    MaaThriftControllerType_UnixDomainSocket = 2,
+};
+
 typedef void* MaaCallbackTransparentArg;
 
 typedef void (*MaaAPICallback)(MaaString msg, MaaJsonString details_json, MaaCallbackTransparentArg callback_arg);
